@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user with role-based access",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "staff"] },
+        "displayName": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product information for inventory and shipping",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "sku": { "type": "string" },
+        "weight": { "type": "number" },
+        "dimensions": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "sku"]
+    },
+    "Recipient": {
+      "title": "Recipient",
+      "description": "Customer or recipient address information",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "province": { "type": "string" },
+        "district": { "type": "string" },
+        "postalCode": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "phone", "address"]
+    },
+    "Label": {
+      "title": "Shipping Label",
+      "description": "Shipping label record in the print queue",
+      "type": "object",
+      "properties": {
+        "recipientId": { "type": "string" },
+        "productIds": { "type": "array", "items": { "type": "string" } },
+        "size": { "type": "string", "enum": ["100x75", "100x150"] },
+        "status": { "type": "string", "enum": ["pending", "printed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "printedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["recipientId", "size", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Product catalog"
+    },
+    "/recipients/{recipientId}": {
+      "schema": "Recipient",
+      "description": "Saved recipients"
+    },
+    "/labels/{labelId}": {
+      "schema": "Label",
+      "description": "Shipping labels and print queue"
+    }
+  }
+}

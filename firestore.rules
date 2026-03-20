@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Collection: products
+    // Collection: recipients
+    // Collection: labels
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidProduct(data) {
+      return hasRequiredFields(['name', 'sku', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.sku is string && data.sku.size() > 0 && data.sku.size() < 100 &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidRecipient(data) {
+      return hasRequiredFields(['name', 'phone', 'address', 'province', 'district', 'postalCode', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.phone is string && data.phone.size() >= 9 && data.phone.size() <= 15 &&
+             data.address is string && data.address.size() > 0 && data.address.size() < 500 &&
+             data.createdAt is timestamp;
+    }
+
+    function isValidLabel(data) {
+      return hasRequiredFields(['recipientId', 'size', 'status', 'createdAt']) &&
+             data.recipientId is string &&
+             data.size in ['100x75', '100x150'] &&
+             data.status in ['pending', 'printed'] &&
+             data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Match Rules (Public Access as requested)
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update: if isValidProduct(request.resource.data);
+      allow delete: if true;
+    }
+
+    match /recipients/{recipientId} {
+      allow read: if true;
+      allow create, update: if isValidRecipient(request.resource.data);
+      allow delete: if true;
+    }
+
+    match /labels/{labelId} {
+      allow read: if true;
+      allow create, update: if isValidLabel(request.resource.data);
+      allow delete: if true;
+    }
+
+    // Default deny for other paths
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Prompt", "Sarabun", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #4F8CFF;
+  --color-app-bg: #F5F9FF;
+  --color-accent: #E3F0FF;
+  --color-text-main: #333333;
+  --color-text-muted: #444444;
+}
+
+@layer base {
+  body {
+    @apply bg-app-bg text-text-main;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: black !important;
+  }
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background: transparent !important;
+    color: black !important;
+    border-color: #ccc !important;
+  }
+  .print-container, .print-label-page {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  main, .flex-1, .overflow-y-auto {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  @page {
+    margin: 0;
+  }
+}
